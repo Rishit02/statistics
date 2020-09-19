@@ -6,9 +6,14 @@ def main():
   pass
 
 def load_data(directory="files"):
-    for file in os.listdir(directory):
-        pd.read_csv(f"file")
 
+    # Collect all teh csv files into one DataFrame
+    all_files = pd.DataFrame()
+    for file in os.listdir(directory):
+        csv_file = pd.read_csv(f"file")
+        all_files.append(csv_file, ignore_index=True)
+
+    # Apply statistical tests on each dataframe
 
 if __name__ == "__main__":
     main()
