@@ -9,7 +9,9 @@ from datetime import datetime, timedelta
 
 def main():
     timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
+    print("Loading data...")
     df = load_data()
+    print("Splitting data...")
     if timeframe[0] == 'y':
         data = split(dataframe=df)
         if timeframe == 'y':
@@ -22,6 +24,7 @@ def main():
         data = split_to_weekly(dataframe=df)
         if timeframe == 'w':
             timeframe = "week"
+    print("Looping through the data...")
     the_loop(matrix=data, timeframe=timeframe)
 
 """
@@ -31,10 +34,13 @@ def load_data(directory="/Volumes/TICK/required_info"):
 
     # Collect all teh csv files into one DataFrame
     all_files = pd.DataFrame()
-    for file in os.listdir(directory):
-        csv_file = pd.read_csv(f"file")
+    dir_list = sorted(os.listdir(directory))
+    for file in dir_list:
+        print("File is: ", file)
+        csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
+        print(csv_file)
+        csv_file['time'] = pd.to_datetime(csv_file['Log_Time'], format="%H%M%S", errors='raise')
         all_files.append(csv_file, ignore_index=True)
-
     return all_files
 
 """
