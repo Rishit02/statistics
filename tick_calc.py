@@ -35,10 +35,8 @@ def load_data(directory="/Volumes/TICK/required_info"):
     # Collect all teh csv files into one DataFrame
     all_files = pd.DataFrame()
     dir_list = sorted(os.listdir(directory))
-    for file in dir_list:
-        print("File is: ", file)
+    for file in dir_list[4:]:
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
-        print(csv_file)
         csv_file['time'] = pd.to_datetime(csv_file['Log_Time'], format="%H%M%S", errors='raise')
         all_files.append(csv_file, ignore_index=True)
     return all_files
