@@ -39,7 +39,8 @@ def load_data(directory="/Volumes/TICK/required_info"):
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
         csv_file['time'] = pd.to_datetime(csv_file['Log_Time'], format="%H%M%S", errors='raise')
         all_files.append(csv_file, ignore_index=True)
-    return all_files
+    print("Length and type: ", len(all_files), type(all_files))
+    return pd.DataFrame(all_files)
 
 """
 Splitting the data into yearly, weekly and monthly values
