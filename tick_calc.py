@@ -33,13 +33,17 @@ Loading the data into a dataframe
 def load_data(directory="/Volumes/TICK/required_info"):
 
     # Collect all teh csv files into one DataFrame
-    all_files = pd.DataFrame()
+    all_files = list()
     dir_list = sorted(os.listdir(directory))
     for file in dir_list[4:]:
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
         csv_file['time'] = pd.to_datetime(csv_file['Log_Time'], format="%H%M%S", errors='raise')
-        all_files.append(csv_file, ignore_index=True)
+        all_files.append(csv_file)
+
+    all_files = pd.concat(all_files, axis=0, ignore_index=True)
     print("Length and type: ", len(all_files), type(all_files))
+    print("time\n", all_files['time'])
+    print("files\n", all_files.head(5))
     return pd.DataFrame(all_files)
 
 """
