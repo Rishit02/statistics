@@ -49,7 +49,8 @@ def load_data(directory="/Volumes/TICK/required_info"):
         all_files.append(csv_file)
 
     all_files = pd.concat(all_files, axis=0, ignore_index=True)
-    weeks = [g for n, g in all_files.groupby(pd.Grouper(key='time',freq='W'))]
+    minute = [g for n, g in all_files.groupby(pd.Grouper(key='time',freq='m'))]
+    print("Grouped by minute\n",minute)
     # for index in all_files.index():
     #     h_m = str(row['time'][index])[0:4]
     #     if index != 0:
