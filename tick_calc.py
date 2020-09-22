@@ -8,24 +8,25 @@ import csv
 from datetime import datetime, timedelta
 
 def main():
-    timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
+    # timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
+    timeframe = "year"
     print("Loading data...")
     df = load_data()
-    print("Splitting data...")
-    if timeframe[0] == 'y':
-        data = split(dataframe=df)
-        if timeframe == 'y':
-            timeframe = "year"
-    elif timeframe[0] == 'm':
-        data = split_to_monthly(dataframe=df)
-        if timeframe == 'm':
-            timeframe = "month"
-    elif timeframe[0] == 'w':
-        data = split_to_weekly(dataframe=df)
-        if timeframe == 'w':
-            timeframe = "week"
-    print("Looping through the data...")
-    the_loop(matrix=data, timeframe=timeframe)
+    # print("Splitting data...")
+    # if timeframe[0] == 'y':
+    #     data = split(dataframe=df)
+    #     if timeframe == 'y':
+    #         timeframe = "year"
+    # elif timeframe[0] == 'm':
+    #     data = split_to_monthly(dataframe=df)
+    #     if timeframe == 'm':
+    #         timeframe = "month"
+    # elif timeframe[0] == 'w':
+    #     data = split_to_weekly(dataframe=df)
+    #     if timeframe == 'w':
+    #         timeframe = "week"
+    # print("Looping through the data...")
+    # the_loop(matrix=data, timeframe=timeframe)
 
 """
 Loading the data into a dataframe
@@ -36,13 +37,25 @@ def load_data(directory="/Volumes/TICK/required_info"):
     all_files = list()
     dir_list = sorted(os.listdir(directory))
     for file in dir_list[4:]:
+        file = str(file)
+        if file[0:2] == "._":
+            continue
+        print(file)
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
-        csv_file['time'] = pd.to_datetime(csv_file['Log_Time'], format="%H%M%S", errors='raise')
+        csv_file['Time'] = csv_file[csv_file.columns[5:7]].apply(lambda x: ','.join(x.dropna().astype(str)),axis=1)
+        csv_file['Time'] = pd.to_datetime(csv_file['Time'], format="%Y%m%d,%H%M%S")
+        print("Length of csv file\n", len(csv_file))
+        print("head of csv file\n", csv_file.head(10))
         all_files.append(csv_file)
 
     all_files = pd.concat(all_files, axis=0, ignore_index=True)
+
+    # for index in all_files.index():
+    #     h_m = str(row['time'][index])[0:4]
+    #     if index != 0:
+    #         h_m_b = str(row['time'][index - 1])[0:4]
+    #     if h_m
     print("Length and type: ", len(all_files), type(all_files))
-    print("time\n", all_files['time'])
     print("files\n", all_files.head(5))
     return pd.DataFrame(all_files)
 
