@@ -44,13 +44,13 @@ def load_data(directory="/Volumes/TICK/required_info"):
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
         csv_file['Time'] = csv_file[csv_file.columns[5:7]].apply(lambda x: ','.join(x.dropna().astype(str)),axis=1)
         csv_file['Time'] = pd.to_datetime(csv_file['Time'], format="%Y%m%d,%H%M%S")
-        print("Length of csv file\n", len(csv_file))
-        print("head of csv file\n", csv_file.head(10))
         all_files.append(csv_file)
 
     all_files = pd.concat(all_files, axis=0, ignore_index=True)
     minute = [g for n, g in all_files.groupby(pd.Grouper(key='time',freq='m'))]
     print("Grouped by minute\n",minute)
+    min = [g for n, g in all_files.groupby(pd.Grouper(key='time',freq='1min'))]
+    print("Grouped by min\n",min)
     # for index in all_files.index():
     #     h_m = str(row['time'][index])[0:4]
     #     if index != 0:
