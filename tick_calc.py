@@ -12,6 +12,9 @@ def main():
     timeframe = "year"
     print("Loading data...")
     df = load_data()
+    path = split_minute(dataframe=df)
+    adf_test(path=path)
+
     # print("Splitting data...")
     # if timeframe[0] == 'y':
     #     data = split(dataframe=df)
@@ -33,13 +36,14 @@ Loading the data into a dataframe
 """
 def load_data(directory="/Volumes/TICK/required_info"):
 
-    # Collect all teh csv files into one DataFrame
+    # Collect all the csv files into one DataFrame
     all_files = list()
     dir_list = sorted(os.listdir(directory))
-    for file in dir_list[4:]:
+    for file in dir_list[100:101]:
         file = str(file)
         if file[0:2] == "._":
             continue
+            print('._', file)
         print(file)
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
         csv_file['Time'] = csv_file[csv_file.columns[5:7]].apply(lambda x: ','.join(x.dropna().astype(str)),axis=1)
@@ -47,45 +51,52 @@ def load_data(directory="/Volumes/TICK/required_info"):
         all_files.append(csv_file)
 
     all_files = pd.concat(all_files, axis=0, ignore_index=True)
-    minute = [g for n, g in all_files.groupby(pd.Grouper(key='time',freq='m'))]
-    print("Grouped by minute\n",minute)
-    min = [g for n, g in all_files.groupby(pd.Grouper(key='time',freq='1min'))]
-    print("Grouped by min\n",min)
-    # for index in all_files.index():
-    #     h_m = str(row['time'][index])[0:4]
-    #     if index != 0:
-    #         h_m_b = str(row['time'][index - 1])[0:4]
-    #     if h_m
-    print("Length and type: ", len(all_files), type(all_files))
-    print("files\n", all_files.head(5))
+
+    print(f"All files header\n{all_files.head(5)}")
     return pd.DataFrame(all_files)
 
 """
 Splitting the data into yearly, weekly and monthly values
 """
-def split(dataframe):
-    years = [g for n, g in dataframe.groupby(pd.Grouper(key='time',freq='Y'))]
-    for i in range(len(years)):
-        year = pd.DataFrame(years[i])
-        year.to_csv(f"year_{i}.csv", columns=["time", "Price"], index=False)
-    print(years)
-    return years
 
-def split_to_weekly(dataframe):
-    weeks = [g for n, g in dataframe.groupby(pd.Grouper(key='time',freq='W'))]
-    for i in range(len(weeks)):
-        week = pd.DataFrame(weeks[i])
-        week.to_csv(f"week_{i}.csv", columns=["time", "Price"], index=False)
-    print("Weeks", weeks)
-    return weeks
+def split_minute(dataframe):
+    mins = [g for n, g in dataframe.groupby(pd.Grouper(key='Time',freq='Min'))]
+    dataframe = list()
 
-def split_to_monthly(dataframe):
-    months = [g for n, g in dataframe.groupby(pd.Grouper(key='time',freq='M'))]
-    for i in range(len(months)):
-        month = pd.DataFrame(months[i])
-        month.to_csv(f"month_{i}.csv", columns=["time", "Price"], index=False)
-    print("Months", months)
-    return months
+    for i in range(len(mins)):
+        min = pd.DataFrame(mins[i])
+        print("Min: \n", min.head(3))
+        if min.empty:
+            print("EMPTY:", i)
+            del min
+        else:
+            min.reset_index(drop=True, inplace=True)
+            min.reset_index(drop=True, inplace=True)
+            time = min.at[0, 'Time']
+            # df.insert(0, 'Time', (min.at[0, 'Time']))
+            # df.insert(1, 'Open', int(min.at[0, 'Price']))
+            min['Open'] = min['Price'][0]
+            min['Price'] = min['Price'][::-1].reset_index(drop=True, inplace=True)
+
+            min['Close'] = min['Price'][0]
+            # df.insert(2, 'Close', int(min.at[len(min.index), 'Price']))
+
+            # Sorting the values to get high low
+            min.sort_values(by=['Price'], ascending=True, inplace=True)
+            min.reset_index(drop=True, inplace=True)
+            print("min and i is \n", min, i)
+            # df.insert(3, 'High', min.at[len(min.index), 'Price'])
+            min['Low'] = min['Price'][0]
+            min.sort_values(by=['Price'], ascending=False, inplace=True)
+            min.reset_index(drop=True, inplace=True)
+            min['High'] = min['Price'][0]
+
+            print("min.head() is: \n", min.head(5))
+            print("MIN.columns is: \n", min.columns)
+
+    min.to_csv("minutes.csv", index=False)
+    return f"minutes.csv"
+
 
 # Higher order function
 """
@@ -126,8 +137,8 @@ def adf_test(path):
     """
     if not os.path.exists(path):
         raise Exception("The path specified does not exist")
-    df = pd.read_csv(path, parse_dates=['time'], index_col='time')
-    series = df.loc[:, 'Price'].values
+    df = pd.read_csv(path, parse_dates=['Time'])
+    series = df.loc[:, 'Open'].values
     # # Plotting the graph of the date against the close
     # df.plot(figsize=(14,8), label="Close Price", title='Series', marker=".")
     # plt.ylabel("Close Prices")
