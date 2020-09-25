@@ -8,38 +8,37 @@ import csv
 from datetime import datetime, timedelta
 
 def main():
-    # timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
-    timeframe = "year"
+    timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
     print("Loading data...")
     df = load_data()
-    path = split_minute(dataframe=df)
-    adf_test(path=path)
+    # path = split_minute(dataframe=df)
+    # df = pd.read_csv(f"{path}")
 
-    # print("Splitting data...")
-    # if timeframe[0] == 'y':
-    #     data = split(dataframe=df)
-    #     if timeframe == 'y':
-    #         timeframe = "year"
-    # elif timeframe[0] == 'm':
-    #     data = split_to_monthly(dataframe=df)
-    #     if timeframe == 'm':
-    #         timeframe = "month"
-    # elif timeframe[0] == 'w':
-    #     data = split_to_weekly(dataframe=df)
-    #     if timeframe == 'w':
-    #         timeframe = "week"
-    # print("Looping through the data...")
-    # the_loop(matrix=data, timeframe=timeframe)
+    print("Splitting data...")
+    if timeframe[0] == 'y':
+        data = split(dataframe=df)
+        if timeframe == 'y':
+            timeframe = "year"
+    elif timeframe[0] == 'm':
+        data = split_to_monthly(dataframe=df)
+        if timeframe == 'm':
+            timeframe = "month"
+    elif timeframe[0] == 'w':
+        data = split_to_weekly(dataframe=df)
+        if timeframe == 'w':
+            timeframe = "week"
+    print("Looping through the data...")
+    the_loop(matrix=data, timeframe=timeframe)
 
 """
 Loading the data into a dataframe
 """
 def load_data(directory="/Volumes/TICK/required_info"):
-
+    month_codes = {"Jan":"F", "Feb":"G", "Mar":"H", "Apr":"J", "May":"K", "Jun":"M", "Jul":"N", "Aug":"Q", "Sep":":U", "Oct":"V", "Nov":"X", "Dec":"Z"}
     # Collect all the csv files into one DataFrame
     all_files = list()
     dir_list = sorted(os.listdir(directory))
-    for file in dir_list[100:101]:
+    for file in dir_list:
         file = str(file)
         if file[0:2] == "._":
             continue
@@ -48,20 +47,23 @@ def load_data(directory="/Volumes/TICK/required_info"):
         csv_file = pd.read_csv(f"/Volumes/TICK/required_info/{file}")
         csv_file['Time'] = csv_file[csv_file.columns[5:7]].apply(lambda x: ','.join(x.dropna().astype(str)),axis=1)
         csv_file['Time'] = pd.to_datetime(csv_file['Time'], format="%Y%m%d,%H%M%S")
+        del df['Log_Time']
+        del df['Year']
+        csv_file = csv_file.loc[(csv_file['Msg_Code'] == "T")]
         all_files.append(csv_file)
 
     all_files = pd.concat(all_files, axis=0, ignore_index=True)
 
     print(f"All files header\n{all_files.head(5)}")
+    all_files.to_csv("all_files.csv")
     return pd.DataFrame(all_files)
 
 """
 Splitting the data into yearly, weekly and monthly values
 """
-
 def split_minute(dataframe):
     mins = [g for n, g in dataframe.groupby(pd.Grouper(key='Time',freq='Min'))]
-    dataframe = list()
+    minutes = list()
 
     for i in range(len(mins)):
         min = pd.DataFrame(mins[i])
@@ -71,32 +73,57 @@ def split_minute(dataframe):
             del min
         else:
             min.reset_index(drop=True, inplace=True)
-            min.reset_index(drop=True, inplace=True)
             time = min.at[0, 'Time']
             # df.insert(0, 'Time', (min.at[0, 'Time']))
             # df.insert(1, 'Open', int(min.at[0, 'Price']))
-            min['Open'] = min['Price'][0]
-            min['Price'] = min['Price'][::-1].reset_index(drop=True, inplace=True)
+            min['Time'] = time
 
-            min['Close'] = min['Price'][0]
+            min['Open'] = min['Price'][0]
+            min['Close'] = min['Price'][len(min) - 1]
             # df.insert(2, 'Close', int(min.at[len(min.index), 'Price']))
 
             # Sorting the values to get high low
-            min.sort_values(by=['Price'], ascending=True, inplace=True)
-            min.reset_index(drop=True, inplace=True)
             print("min and i is \n", min, i)
             # df.insert(3, 'High', min.at[len(min.index), 'Price'])
-            min['Low'] = min['Price'][0]
-            min.sort_values(by=['Price'], ascending=False, inplace=True)
+            min.sort_values(by=['Price'], ascending=True, inplace=True)
             min.reset_index(drop=True, inplace=True)
-            min['High'] = min['Price'][0]
+            min['Low'] = min['Price'][0]
+            min['High'] = min['Price'][len(min)-1]
+            print("min.head() is: \n", min.head(5))
 
             print("min.head() is: \n", min.head(5))
             print("MIN.columns is: \n", min.columns)
 
-    min.to_csv("minutes.csv", index=False)
+            minutes.append(min)
+
+    print("minutes is: \n", minutes, type(minutes))
+
+    minutes = pd.concat(minutes, axis=0, ignore_index=True)
+    minutes.to_csv("minutes.csv")
     return f"minutes.csv"
 
+def split(dataframe):
+    years = [g for n, g in dataframe.groupby(pd.Grouper(key='Time',freq='Y'))]
+    for i in range(len(years)):
+        year = pd.DataFrame(years[i])
+        year.to_csv(f"year_{i}.csv", columns=["Time", "Price"], index=False)
+    print(years)
+    return years
+def split_to_weekly(dataframe):
+    weeks = [g for n, g in dataframe.groupby(pd.Grouper(key='Time',freq='W'))]
+    for i in range(len(weeks)):
+        week = pd.DataFrame(weeks[i])
+        week.to_csv(f"week_{i}.csv", columns=["Time", "Price"], index=False)
+    print("Weeks", weeks)
+    return weeks
+
+def split_to_monthly(dataframe):
+    months = [g for n, g in dataframe.groupby(pd.Grouper(key='time',freq='M'))]
+    for i in range(len(months)):
+        month = pd.DataFrame(months[i])
+        month.to_csv(f"month_{i}.csv", columns=["Time", "Price"], index=False)
+    print("Months", months)
+    return months
 
 # Higher order function
 """
@@ -138,7 +165,7 @@ def adf_test(path):
     if not os.path.exists(path):
         raise Exception("The path specified does not exist")
     df = pd.read_csv(path, parse_dates=['Time'])
-    series = df.loc[:, 'Open'].values
+    series = df.loc[:, 'Close'].values
     # # Plotting the graph of the date against the close
     # df.plot(figsize=(14,8), label="Close Price", title='Series', marker=".")
     # plt.ylabel("Close Prices")
