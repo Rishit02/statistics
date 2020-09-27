@@ -123,7 +123,7 @@ def split_to_weekly(dataframe):
     return weeks
 
 def split_to_monthly(dataframe):
-    months = [g for n, g in dataframe.groupby(pd.Grouper(key='time',freq='M'))]
+    months = [g for n, g in dataframe.groupby(pd.Grouper(key='Time',freq='M'))]
     for i in range(len(months)):
         month = pd.DataFrame(months[i])
         month.to_csv(f"month_{i}.csv", columns=["Time", "Close"], index=False)
