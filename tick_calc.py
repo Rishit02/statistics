@@ -9,13 +9,13 @@ from datetime import datetime, timedelta
 
 def main():
     timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
-    print("Loading data...")
+    print("Loading data...", end="\n\n")
     df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
-    print("Splitting into the initial minutes")
+    print("Splitting into the initial minutes", end="\n\n)
     path = split_minute(dataframe=df)
-    print("Reading into the minutes.csv file")
+    print("Reading into the minutes.csv file", end="\n\n)
     df = pd.read_csv(f"{path}")
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
@@ -47,7 +47,6 @@ def split_minute(dataframe):
     month_codes = {"F":1, "G":2, "H":3, "J":4, "K":5, "M":6, "N":7, "Q":8, "U":9, "V":10, "X":11, "Z":12}
     for i in range(len(mins)):
         min_data = pd.DataFrame(mins[i])
-        print("min_data: \n", min_data.head(3))
         if min_data.empty:
             print("EMPTY:", i)
             del min_data
@@ -91,10 +90,7 @@ def split_minute(dataframe):
             min_data['Low'] = min_data['Price'][0]
             min_data['High'] = min_data['Price'][len(min_data)-1]
             print("min_data.head() is: \n", min_data.head(5))
-
-            print("min_data.head() is: \n", min_data.head(5))
-            print("min_data.columns is: \n", min_data.columns)
-
+            del min_data['diff']
             minutes.append(min_data)
 
     print("minutes is: \n", minutes[0:10], type(minutes))
