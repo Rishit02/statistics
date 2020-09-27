@@ -11,7 +11,6 @@ def main():
     timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
     print("Loading data...")
     df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
-    df = df[0:5000]
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
     print("Splitting into the initial minutes")
