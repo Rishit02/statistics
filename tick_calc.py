@@ -9,13 +9,14 @@ from datetime import datetime, timedelta
 
 def main():
     timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
-    print("Loading data...", end="\n\n")
-    df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
-    df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
-
-    print("Splitting into the initial minutes", end="\n\n)
-    path = split_minute(dataframe=df)
-    print("Reading into the minutes.csv file", end="\n\n)
+    # print("Loading data...", end="\n\n")
+    # df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
+    # df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
+    #
+    # print("Splitting into the initial minutes", end="\n\n)
+    # path = split_minute(dataframe=df)
+    print("Reading into the minutes.csv file", end="\n\n")
+    path = "minutes.csv"
     df = pd.read_csv(f"{path}")
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
@@ -36,7 +37,10 @@ def main():
         if timeframe == 'w':
             timeframe = "week"
     print("Looping through the data...")
-    the_loop(matrix=data, timeframe=timeframe)
+    try:
+        the_loop(matrix=data, timeframe=timeframe)
+    except Exception as e:
+        print(e)
 
 """
 Splitting the data into yearly, weekly and monthly values
@@ -141,7 +145,10 @@ def the_loop(matrix, timeframe):
         time = str(matrix[i]["Time"]).split()[1]
         print("type", type(matrix[i]["Time"]))
         times.append(time)
-        statistics = adf_test(f"{timeframe}_{i}.csv")
+        try:
+            statistics = adf_test(f"{timeframe}_{i}.csv")
+        except Exception as e:
+            print(e)
         print("stats", statistics)
         ADF_stats.append(statistics[0])
         p_value.append(statistics[1])
