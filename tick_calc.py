@@ -1,4 +1,5 @@
 import os
+import sys
 from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 from pandas import Timestamp
@@ -9,21 +10,28 @@ from datetime import datetime, timedelta
 
 def main():
     timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
-    # print("Loading data...", end="\n\n")
-    # df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
-    # df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
-    #
-    # print("Splitting into the initial minutes", end="\n\n)
-    # path = split_minute(dataframe=df)
+    print("Loading data...", end="\n")
+    try:
+        df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
+    except Exception as e:
+        print("These are your options:")
+        print("1. Either insert a thumbdrive with the 'all_files' folder")
+        print("2. Comment out this part of the code IF you already have the minute data")
+        print("Note: for step 2 split_minute() function must also be commented out")
+        print(e)
+        sys.exit("Try again!")
+
+    df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
+
+    print("Splitting into the initial minutes", end="\n\n)
+    path = split_minute(dataframe=df)
     print("Reading into the minutes.csv file", end="\n\n")
     path = "minutes.csv"
     df = pd.read_csv(f"{path}")
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
     print("Splitting data...")
-    # data = split(dataframe=df)  # Yearly
-    # data = split_to_monthly(dataframe=df)   # Monthly
-    # data = split_to_weekly(dataframe=df)    # Weekly
+
     if timeframe[0] == 'y':
         data = split(dataframe=df)
         if timeframe == 'y':
