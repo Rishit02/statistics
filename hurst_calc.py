@@ -1,12 +1,16 @@
 import os
 import sys
 import numpy as np
+from numpy import *
 import pandas as pd
 import matplotlib.pyplot as plt
 from hurst import compute_Hc
+from pylab import plot, show
+
 
 def main():
     df = pd.read_csv("minutes.csv")
+    df = df[0:400]
     series = pd.Series(df["Close"])
 
     # Evaluate Hurst equation
