@@ -24,7 +24,7 @@ def main():
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
     print("Splitting into the initial minutes")
-    path = split_minute(dataframe=df)
+    path = split_minute(dataframe=df, futures_market=3)
     print("Reading into the minutes.csv file")
     path = "minutes.csv"
     df = pd.read_csv(f"{path}")
@@ -53,7 +53,7 @@ def main():
 """
 Splitting the data into yearly, weekly and monthly values
 """
-def split_minute(dataframe):
+def split_minute(dataframe, futures_market=3):
     mins = [g for n, g in dataframe.groupby(pd.Grouper(key='Time',freq='Min'))]
     minutes = list()
     month_codes = {"F":1, "G":2, "H":3, "J":4, "K":5, "M":6, "N":7, "Q":8, "U":9, "V":10, "X":11, "Z":12}
@@ -88,7 +88,7 @@ def split_minute(dataframe):
             min_data['diff'] = min_data["Mth_num"] - min_data['Months']
             print("Futures market 3 mnths ahead")
             print(min_data)
-            min_data.drop(min_data[min_data["diff"] != 2].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
+            min_data.drop(min_data[min_data["diff"] != futures_market].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
 
             # If all the rows are deleted continue with the next min_data
             if min_data.empty:

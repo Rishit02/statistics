@@ -8,10 +8,8 @@ from hurst import compute_Hc
 from pylab import plot, show
 
 def main():
-    df = pd.read_csv("minutes.csv")
-    df = df[0:400]
+    df = pd.read_csv("minutes_3.csv")
     series = pd.Series(df["Close"])
-
     # Evaluate Hurst equation
     H, c, data = compute_Hc(series, kind='price', simplified=True)
     print(f"H={H:.4f}, c={c:.4f}")
