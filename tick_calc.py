@@ -105,8 +105,6 @@ def split_minute(dataframe):
             # df.insert(2, 'Close', int(min_data.at[len(min_data.index), 'Price']))
 
             # Sorting the values to get high low
-            print("min_data and i is \n", min_data, i)
-            # df.insert(3, 'High', min_data.at[len(min_data.index), 'Price'])
             min_data.sort_values(by=['Price'], ascending=True, inplace=True)
             min_data.reset_index(drop=True, inplace=True)
             min_data['Low'] = min_data['Price'][0]
