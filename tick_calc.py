@@ -25,7 +25,7 @@ def main():
 
     print("Splitting into the initial minutes")
     path = split_minute(dataframe=df)
-    print("Reading into the minutes.csv file", end="\n\n")
+    print("Reading into the minutes.csv file")
     path = "minutes.csv"
     df = pd.read_csv(f"{path}")
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
@@ -73,6 +73,14 @@ def split_minute(dataframe):
                 mth_num = np.append(mth_num, month_codes[item[1]])
 
             print("mth_num", mth_num)
+            print("Futures market 3 mnths ahead")
+            print(min_data)
+            for index in min_data.index:
+                print('loop')
+                if min_data.loc[index, 'Mth_num'] <= 3:
+                    print('if satisfied')
+                    min_data.loc[index, 'Mth_num'] += 12
+
             min_data["Mth_num"] = mth_num
             min_data['Months'] = pd.DatetimeIndex(min_data['Time']).month
             min_data['diff'] = min_data["Mth_num"] - min_data['Months']
@@ -103,7 +111,7 @@ def split_minute(dataframe):
             min_data['High'] = min_data['Price'][len(min_data)-1]
             print("min_data.head() is: \n", min_data.head(5))
             del min_data['diff']
-            minutes.append(min_data)
+            minutes.append(min_data.ix[(len(min_data) - 1), ])
 
     print("minutes is: \n", minutes[0:10], type(minutes))
 
