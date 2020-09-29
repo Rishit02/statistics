@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 def main():
     timeframe = str(input("What's the timeframe? {week, month or year}: ")).lower()
-    print("Loading data...", end="\n")
+    print("Loading data...")
     try:
         df = pd.read_csv("/Volumes/TICK/spreadsheets/all_files.csv")
     except Exception as e:
@@ -23,7 +23,7 @@ def main():
 
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
-    print("Splitting into the initial minutes", end="\n\n)
+    print("Splitting into the initial minutes")
     path = split_minute(dataframe=df)
     print("Reading into the minutes.csv file", end="\n\n")
     path = "minutes.csv"
@@ -78,7 +78,7 @@ def split_minute(dataframe):
             min_data['diff'] = min_data["Mth_num"] - min_data['Months']
             print("Futures market 3 mnths ahead")
             print(min_data)
-            min_data.drop(min_data[min_data["diff"] != 3].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
+            min_data.drop(min_data[min_data["diff"] != 2].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
 
             # If all the rows are deleted continue with the next min_data
             if min_data.empty:
