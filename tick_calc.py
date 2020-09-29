@@ -23,9 +23,9 @@ def main():
 
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
-    print("Splitting into the initial minutes", end="\n\n)
+    print("Splitting into the initial minutes")
     path = split_minute(dataframe=df)
-    print("Reading into the minutes.csv file", end="\n\n")
+    print("Reading into the minutes.csv file")
     path = "minutes.csv"
     df = pd.read_csv(f"{path}")
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
@@ -81,7 +81,7 @@ def split_minute(dataframe):
             for index in diff.index:
                 if diff.loc[index, 'Mth_num'] <= 3:
                     diff.loc[index, 'Mth_num'] += 12
-                    
+
             min_data.drop(min_data[min_data["diff"] != 3].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
 
             # If all the rows are deleted continue with the next min_data
