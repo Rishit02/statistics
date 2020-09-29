@@ -73,14 +73,17 @@ def split_minute(dataframe):
                 mth_num = np.append(mth_num, month_codes[item[1]])
 
             print("mth_num", mth_num)
-            min_data["Mth_num"] = mth_num
-            min_data['Months'] = pd.DatetimeIndex(min_data['Time']).month
-            min_data['diff'] = min_data["Mth_num"] - min_data['Months']
             print("Futures market 3 mnths ahead")
             print(min_data)
             for index in min_data.index:
+                print('loop')
                 if min_data.loc[index, 'Mth_num'] <= 3:
+                    print('if satisfied')
                     min_data.loc[index, 'Mth_num'] += 12
+
+            min_data["Mth_num"] = mth_num
+            min_data['Months'] = pd.DatetimeIndex(min_data['Time']).month
+            min_data['diff'] = min_data["Mth_num"] - min_data['Months']
 
             min_data.drop(min_data[min_data["diff"] != 3].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
 
