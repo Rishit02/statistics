@@ -24,7 +24,7 @@ def main():
     df['Time'] = pd.to_datetime(df['Time'], format="%Y-%m-%d %H:%M:%S")
 
     print("Splitting into the initial minutes")
-    path = split_minute(dataframe=df, futures_market=3)
+    path = split_minute(dataframe=df, futures_market=4)
     print("Reading into the minutes.csv file")
     path = "minutes.csv"
     df = pd.read_csv(f"{path}")
@@ -81,7 +81,7 @@ def split_minute(dataframe, futures_market=3):
 
             for index in min_data.index:
                 if min_data.loc[index, 'Months'] >=9:
-                    if min_data.loc[index, 'Mth_num'] <= 3:
+                    if min_data.loc[index, 'Mth_num'] <= 4:
                         print('if satisfied')
                         min_data.loc[index, 'Mth_num'] += 12
 
