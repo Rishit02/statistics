@@ -78,6 +78,10 @@ def split_minute(dataframe):
             min_data['diff'] = min_data["Mth_num"] - min_data['Months']
             print("Futures market 3 mnths ahead")
             print(min_data)
+            for index in diff.index:
+                if diff.loc[index, 'Mth_num'] <= 3:
+                    diff.loc[index, 'Mth_num'] += 12
+                    
             min_data.drop(min_data[min_data["diff"] != 3].index, inplace=True) # Change the number here in order to change the number of years ahead you want the furtures market
 
             # If all the rows are deleted continue with the next min_data
@@ -103,7 +107,7 @@ def split_minute(dataframe):
             min_data['High'] = min_data['Price'][len(min_data)-1]
             print("min_data.head() is: \n", min_data.head(5))
             del min_data['diff']
-            minutes.append(min_data)
+            minutes.append(min_data[len(min_data) - 1])
 
     print("minutes is: \n", minutes[0:10], type(minutes))
 
