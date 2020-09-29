@@ -80,10 +80,10 @@ def split_minute(dataframe):
             min_data['Months'] = pd.DatetimeIndex(min_data['Time']).month
 
             for index in min_data.index:
-                print('loop')
-                if min_data.loc[index, 'Mth_num'] <= 3:
-                    print('if satisfied')
-                    min_data.loc[index, 'Mth_num'] += 12
+                if min_data.loc[index, 'Months'] >=9:
+                    if min_data.loc[index, 'Mth_num'] <= 3:
+                        print('if satisfied')
+                        min_data.loc[index, 'Mth_num'] += 12
 
             min_data['diff'] = min_data["Mth_num"] - min_data['Months']
             print("Futures market 3 mnths ahead")
@@ -113,7 +113,7 @@ def split_minute(dataframe):
             min_data['High'] = min_data['Price'][len(min_data)-1]
             print("min_data.head() is: \n", min_data.head(5))
             del min_data['diff']
-            minutes.append(min_data.ix[(len(min_data) - 1), ])
+            minutes.append(min_data.iloc[[len(min_data) - 1]])
 
     print("minutes is: \n", minutes[0:10], type(minutes))
 
