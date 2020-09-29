@@ -110,7 +110,7 @@ def split_minute(dataframe):
             min_data['High'] = min_data['Price'][len(min_data)-1]
             print("min_data.head() is: \n", min_data.head(5))
             del min_data['diff']
-            minutes.append(min_data[0])
+            minutes.append(min_data.ix[(len(min_data) - 1), ])
 
     print("minutes is: \n", minutes[0:10], type(minutes))
 
